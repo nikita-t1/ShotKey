@@ -1,19 +1,14 @@
-from machine import Pin, I2C, PWM
-import DRV8825
 import utime
+from machine import Pin
 
+import DRV8825
+from initHardware import init_color_wheel, init_rotary_encoder, init_stepper_motor, init_display, init_shot_tray, \
+    init_start_button
 from color_wheel import ColorWheel
 from rotary_encoder import RotaryEncoder
-from display import Display
+from shot_tray import ShotTray
 
-Objectname = open("fillLevel.txt", "w")
-print(open("fillLevel.txt", "r").read())
-Objectname.write(str(50))
-Objectname.close()
-print(open("fillLevel.txt", "r").read())
-
-i2c = I2C(0, sda=Pin(16), scl=Pin(17))
-oled = Display(i2c)
+oled = init_display()
 
 ###
 oled.write_text_to_display(None, "", "Start", "")
@@ -22,154 +17,62 @@ utime.sleep(3)
 
 ###
 oled.write_text_to_display(None, "", "Initialisiere", "Farbrad", "")
-
-bluePin = PWM(Pin(11))
-greenPin = PWM(Pin(12))
-redPin = PWM(Pin(13))
-
-color_wheel = ColorWheel(bluePin, greenPin, redPin)
-
-color_wheel.showRed()
-utime.sleep(2)
-color_wheel.showYellow()
-utime.sleep(2)
-color_wheel.showGreen()
-utime.sleep(2)
-color_wheel.showBlue()
-utime.sleep(2)
+color_wheel: ColorWheel = init_color_wheel()
 ###
 
 ###
 oled.write_text_to_display(None, "", "Initialisiere", "Drehschalter", "")
+rotary_encoder: RotaryEncoder = init_rotary_encoder()
+###
 
-encoderAPin = Pin(22, Pin.IN, Pin.PULL_UP)
-encoderBPin = Pin(26, Pin.IN, Pin.PULL_UP)
-
-rotary_encoder = RotaryEncoder(encoderAPin, encoderBPin)
+###
+oled.write_text_to_display(None, "", "Initialisiere", "Glaserkennung", "")
+shot_tray: ShotTray = init_shot_tray()
 ###
 
 ###
 oled.write_text_to_display(None, "", "Initialisiere", "Stepper Motor", "")
-
-dirPin = Pin(20, Pin.OUT, value=0)
-stepPin = Pin(19, Pin.OUT, Pin.PULL_DOWN)
-enablePinPin = Pin(18, Pin.OUT, value=0)
-
-stepper = DRV8825.A4988Nema(dirPin, stepPin)
-utime.sleep(3)
+stepper: DRV8825.A4988Nema = init_stepper_motor()
 ###
 
 ###
 oled.write_text_to_display(None, "", "Fahre zu ", "Nullposition", "")
-
-stepperAdjustPin = Pin(14, Pin.IN, Pin.PULL_DOWN)  # K4
-while stepperAdjustPin.value() == 1:
-    stepper.motor_go(clockwise=False, steps=5, stepdelay=.005, verbose=False, initdelay=.00)
-
+stepper.move_to_end_switch()
 oled.write_text_to_display(None, "", "Nullposition", "erreicht", "")
 utime.sleep(3)
-
-
 ###
+
+buttonStart = init_start_button()
+
 def start_rotate():
-    enPin = Pin(18, Pin.OUT, value=0)
-    oneStep = 200
-    lastPos = 0
-    print("Start")
+    print("Starte Ablauf")
 
-    if button1.value():
-        stepper.motor_go(clockwise=True, steps=lastPos, stepdelay=.005, verbose=False, initdelay=.00)
-        if button1.value():
-            print("Befülle Glas Nr 1")
-            print(lastPos)
-            utime.sleep(2)
-        lastPos = 0
+    if shot_tray.tray_1.value():
+        stepper.move_to_position(0)
 
-    lastPos = lastPos + oneStep
-    if button2.value():
-        stepper.motor_go(clockwise=True, steps=lastPos, stepdelay=.005, verbose=False, initdelay=.00)
-        if button2.value():
-            print("Befülle Glas Nr 2")
-            print(lastPos)
-            utime.sleep(2)
-        lastPos = 0
+    if shot_tray.tray_2.value():
+        stepper.move_to_position(1)
 
-    lastPos = lastPos + oneStep
-    if button3.value():
-        stepper.motor_go(clockwise=True, steps=lastPos, stepdelay=.005, verbose=False, initdelay=.00)
-        if button3.value():
-            print("Befülle Glas Nr 3")
-            print(lastPos)
-            utime.sleep(2)
-        lastPos = 0
+    if shot_tray.tray_3.value():
+        stepper.move_to_position(2)
 
-    lastPos = lastPos + oneStep
-    if button4.value():
-        stepper.motor_go(clockwise=True, steps=lastPos, stepdelay=.005, verbose=False, initdelay=.00)
-        if button4.value():
-            print("Befülle Glas Nr 4")
-            print(lastPos)
-            utime.sleep(2)
-        lastPos = 0
+    if shot_tray.tray_4.value():
+        stepper.move_to_position(3)
 
-    lastPos = lastPos + oneStep
-    if button5.value():
-        stepper.motor_go(clockwise=True, steps=lastPos, stepdelay=.005, verbose=False, initdelay=.00)
-        if button5.value():
-            print("Befülle Glas Nr 5")
-            print(lastPos)
-            utime.sleep(2)
-        lastPos = 0
+    if shot_tray.tray_5.value():
+        stepper.move_to_position(4)
 
-    lastPos = lastPos + oneStep
-    if button6.value():
-        stepper.motor_go(clockwise=True, steps=lastPos, stepdelay=.005, verbose=False, initdelay=.00)
-        if button6.value():
-            print("Befülle Glas Nr 6")
-            print(lastPos)
-            utime.sleep(2)
-        lastPos = 0
+    if shot_tray.tray_6.value():
+        stepper.move_to_position(5)
 
-    lastPos = lastPos + oneStep
-    if button7.value():
-        stepper.motor_go(clockwise=True, steps=lastPos, stepdelay=.005, verbose=False, initdelay=.00)
-        if button7.value():
-            print("Befülle Glas Nr 7")
-            print(lastPos)
-            utime.sleep(2)
-        lastPos = 0
+    if shot_tray.tray_7.value():
+        stepper.move_to_position(6)
 
-    lastPos = lastPos + oneStep
-    if button8.value():
-        stepper.motor_go(clockwise=True, steps=lastPos, stepdelay=.005, verbose=False, initdelay=.00)
-        if button8.value():
-            print("Befülle Glas Nr 8")
-            print(lastPos)
-            utime.sleep(2)
-        lastPos = 0
+    if shot_tray.tray_8.value():
+        stepper.move_to_position(7)
 
-    while stepperAdjustPin.value() == 1:
-        stepper.motor_go(clockwise=False, steps=5, stepdelay=.005, verbose=False, initdelay=.00)
+    stepper.move_to_end_switch()
 
-    enPin.value(1)
-
-
-###
-oled.write_text_to_display(None, "", "Initialisiere", "Glaserkennung", "")
-
-button1 = Pin(1, Pin.IN, Pin.PULL_DOWN)
-button2 = Pin(2, Pin.IN, Pin.PULL_DOWN)
-button3 = Pin(3, Pin.IN, Pin.PULL_DOWN)
-button4 = Pin(4, Pin.IN, Pin.PULL_DOWN)
-button5 = Pin(5, Pin.IN, Pin.PULL_DOWN)
-button6 = Pin(6, Pin.IN, Pin.PULL_DOWN)
-button7 = Pin(7, Pin.IN, Pin.PULL_DOWN)
-button8 = Pin(8, Pin.IN, Pin.PULL_DOWN)
-
-utime.sleep(3)
-
-
-###
 
 class UI_Screen:
     Main = 0
@@ -211,7 +114,6 @@ class UI_Screen:
         return self
 
 
-buttonStart = Pin(15, Pin.IN, Pin.PULL_DOWN)
 oled.write_text_to_display(None, "Einsatzbereit", "", "Fuellstand", "69%")
 color_wheel.showGreen()
 

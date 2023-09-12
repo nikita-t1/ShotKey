@@ -2,36 +2,58 @@ import sys
 import time
 from machine import Pin, I2C
 
+
 class StopMotorInterrupt(Exception):
     """ Stop the motor """
     pass
 
+
 class A4988Nema(object):
     """ Class to control a Nema bi-polar stepper motor with a A4988 also tested with DRV8825"""
-    def __init__(self, direction_pin, step_pin):
-        """ class init method 3 inputs
-        (1) direction type=int , help=GPIO pin connected to DIR pin of IC
-        (2) step_pin type=int , help=GPIO pin connected to STEP of IC
-        (3) mode_pins type=tuple of 3 ints, help=GPIO pins connected to
-        Microstep Resolution pins MS1-MS3 of IC, can be set to (-1,-1,-1) to turn off
-        GPIO resolution.
-        (4) motor_type type=string, help=Type of motor two options: A4988 or DRV8825
-        """
-        
+
+    def __init__(self, direction_pin, step_pin, enablePinPin, end_switch_pin):
         self.dirPin = direction_pin
         self.stepPin = step_pin
-        
-        #self.direction_pin = direction_pin
-        #self.step_pin = step_pin
+        self.enablePin = enablePinPin
+        self.end_switch_pin = end_switch_pin
+
+        self.current_position = 0
 
         self.stop_motor = False
-        
+
         self.resolution = {'Full': (0, 0, 0),
-                          'Half': (1, 0, 0),
-                          '1/4': (0, 1, 0),
-                          '1/8': (1, 1, 0),
-                          '1/16': (0, 0, 1),
-                          '1/32': (1, 0, 1)}
+                           'Half': (1, 0, 0),
+                           '1/4': (0, 1, 0),
+                           '1/8': (1, 1, 0),
+                           '1/16': (0, 0, 1),
+                           '1/32': (1, 0, 1)}
+
+    def move_to_end_switch(self):
+        """ Moves the motor until the end switch is triggered """
+        self.enablePin.value(0)
+        while self.end_switch_pin.value() == 1:
+            self.motor_go(clockwise=False, steps=5, stepdelay=.005, verbose=False, initdelay=.00)
+            # TODO: Add a timeout here
+        self.current_position = 0
+        self.enablePin.value(1)
+
+    def move_to_position(self, position):
+        """ Moves the motor to the specified position """
+        if position > 7 or position < 0:
+            raise ValueError("Position must be between 0 and 7")
+        if position == self.current_position:
+            return
+
+        self.enablePin.value(0)
+        if position > self.current_position:
+            steps = (position - self.current_position) * 200
+            self.motor_go(clockwise=True, steps=steps, stepdelay=.005, verbose=False, initdelay=.00)
+        else:
+            steps = (self.current_position - position) * 200
+            self.motor_go(clockwise=False, steps=steps, stepdelay=.005, verbose=False, initdelay=.00)
+
+        self.current_position = position
+        self.enablePin.value(1)
 
     def motor_stop(self):
         """ Stop the motor """
@@ -41,16 +63,13 @@ class A4988Nema(object):
         """ motor_go,  moves stepper motor based on 6 inputs
          (1) clockwise, type=bool default=False
          help="Turn stepper counterclockwise"
-         (2) steptype, type=string , default=Full help= type of drive to
-         step motor 5 options
-            (Full, Half, 1/4, 1/8, 1/16) 1/32 for DRV8825 only 1/64 1/128 for LV8729 only
-         (3) steps, type=int, default=200, help=Number of steps sequence's
+         (2) steps, type=int, default=200, help=Number of steps sequence's
          to execute. Default is one revolution , 200 in Full mode.
-         (4) stepdelay, type=float, default=0.05, help=Time to wait
+         (3) stepdelay, type=float, default=0.05, help=Time to wait
          (in seconds) between steps.
-         (5) verbose, type=bool  type=bool default=False
+         (4) verbose, type=bool  type=bool default=False
          help="Write pin actions",
-         (6) initdelay, type=float, default=1mS, help= Intial delay after
+         (5) initdelay, type=float, default=1mS, help= Intial delay after
          GPIO pins initialized but before motor is moved.
         """
         self.stop_motor = False
@@ -68,7 +87,7 @@ class A4988Nema(object):
                     self.stepPin.off()
                     time.sleep(stepdelay)
                     if verbose:
-                        print("Steps count {}".format(i+1), end="\r", flush=True)
+                        print("Steps count {}".format(i + 1), end="\r", flush=True)
 
         except KeyboardInterrupt:
             print("User Keyboard Interrupt : RpiMotorLib:")
