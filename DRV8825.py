@@ -31,7 +31,7 @@ class A4988Nema(object):
     def move_to_end_switch(self):
         """ Moves the motor until the end switch is triggered """
         self.enablePin.value(0)
-        while self.end_switch_pin.value() == 1:
+        while self.end_switch_pin.value() == 0:
             self.motor_go(clockwise=False, steps=5, stepdelay=.005, verbose=False, initdelay=.00)
             # TODO: Add a timeout here
         self.current_position = 0
