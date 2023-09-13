@@ -9,15 +9,15 @@ from shot_tray import ShotTray
 
 
 def init_display() -> Display:
-    i2c = I2C(0, sda=Pin(16), scl=Pin(17))
+    i2c = I2C(0, sda=Pin(0), scl=Pin(1))
     oled = Display(i2c)
     return oled
 
 
 def init_color_wheel() -> ColorWheel:
-    bluePin = PWM(Pin(11))
-    greenPin = PWM(Pin(12))
-    redPin = PWM(Pin(13))
+    bluePin = PWM(Pin(2))
+    greenPin = PWM(Pin(4))
+    redPin = PWM(Pin(5))
 
     color_wheel = ColorWheel(bluePin, greenPin, redPin)
 
@@ -34,8 +34,8 @@ def init_color_wheel() -> ColorWheel:
 
 
 def init_rotary_encoder() -> RotaryEncoder:
-    encoderAPin = Pin(22, Pin.IN, Pin.PULL_UP)
-    encoderBPin = Pin(26, Pin.IN, Pin.PULL_UP)
+    encoderAPin = Pin(15, Pin.IN, Pin.PULL_UP)
+    encoderBPin = Pin(14, Pin.IN, Pin.PULL_UP)
 
     rotary_encoder = RotaryEncoder(encoderAPin, encoderBPin)
     utime.sleep(3)
@@ -43,11 +43,11 @@ def init_rotary_encoder() -> RotaryEncoder:
 
 
 def init_stepper_motor() -> DRV8825.A4988Nema:
-    dirPin = Pin(20, Pin.OUT, value=0)
-    stepPin = Pin(19, Pin.OUT, Pin.PULL_DOWN)
-    enablePinPin = Pin(18, Pin.OUT, value=0)
+    dirPin = Pin(13, Pin.OUT, value=0)
+    stepPin = Pin(12, Pin.OUT, Pin.PULL_DOWN)
+    enablePinPin = Pin(11, Pin.OUT, value=0)
 
-    endSwitchPin = Pin(14, Pin.IN, Pin.PULL_DOWN)  # Endschalter
+    endSwitchPin = Pin(28, Pin.IN, Pin.PULL_DOWN)  # Endschalter
 
     stepper: DRV8825.A4988Nema = DRV8825.A4988Nema(dirPin, stepPin, enablePinPin, endSwitchPin)
     utime.sleep(3)
@@ -55,19 +55,19 @@ def init_stepper_motor() -> DRV8825.A4988Nema:
 
 
 def init_start_button() -> Pin:
-    startButton = Pin(15, Pin.IN, Pin.PULL_DOWN)
+    startButton = Pin(3, Pin.IN, Pin.PULL_DOWN)
     return startButton
 
 
 def init_shot_tray() -> ShotTray:
-    btn1 = Pin(1, Pin.IN, Pin.PULL_DOWN)
-    btn2 = Pin(2, Pin.IN, Pin.PULL_DOWN)
-    btn3 = Pin(3, Pin.IN, Pin.PULL_DOWN)
-    btn4 = Pin(4, Pin.IN, Pin.PULL_DOWN)
-    btn5 = Pin(5, Pin.IN, Pin.PULL_DOWN)
-    btn6 = Pin(6, Pin.IN, Pin.PULL_DOWN)
-    btn7 = Pin(7, Pin.IN, Pin.PULL_DOWN)
-    btn8 = Pin(8, Pin.IN, Pin.PULL_DOWN)
+    btn1 = Pin(27, Pin.IN, Pin.PULL_DOWN)
+    btn2 = Pin(26, Pin.IN, Pin.PULL_DOWN)
+    btn3 = Pin(22, Pin.IN, Pin.PULL_DOWN)
+    btn4 = Pin(21, Pin.IN, Pin.PULL_DOWN)
+    btn5 = Pin(20, Pin.IN, Pin.PULL_DOWN)
+    btn6 = Pin(19, Pin.IN, Pin.PULL_DOWN)
+    btn7 = Pin(18, Pin.IN, Pin.PULL_DOWN)
+    btn8 = Pin(17, Pin.IN, Pin.PULL_DOWN)
 
     shot_tray = ShotTray(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
     utime.sleep(3)
