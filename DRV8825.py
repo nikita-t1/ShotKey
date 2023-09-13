@@ -46,11 +46,15 @@ class A4988Nema(object):
 
         self.enablePin.value(0)
         if position > self.current_position:
-            steps = (position - self.current_position) * 200
-            self.motor_go(clockwise=True, steps=steps, stepdelay=.005, verbose=False, initdelay=.00)
+            for i in range(self.current_position, position):
+                self.motor_go(clockwise=True, steps=200, stepdelay=.005, verbose=False, initdelay=.00)
+            #steps = (position - self.current_position) * 200
+            #self.motor_go(clockwise=True, steps=steps, stepdelay=.005, verbose=False, initdelay=.00)
         else:
-            steps = (self.current_position - position) * 200
-            self.motor_go(clockwise=False, steps=steps, stepdelay=.005, verbose=False, initdelay=.00)
+            for i in range(position, self.current_position):
+                self.motor_go(clockwise=False, steps=200, stepdelay=.005, verbose=False, initdelay=.00)
+            #steps = (self.current_position - position) * 200
+            #self.motor_go(clockwise=False, steps=steps, stepdelay=.005, verbose=False, initdelay=.00)
 
         self.current_position = position
         self.enablePin.value(1)
