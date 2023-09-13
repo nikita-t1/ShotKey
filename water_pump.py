@@ -29,6 +29,8 @@ class WaterPump:
         self.turn_on_for_ml(self.default_shot_size)
 
     def change_shot_size(self, shot_size: int):
+        if shot_size < 0 or shot_size > 100:
+            return
         self.default_shot_size = shot_size
         shot_size_file = open("shotSize.txt", "w")
         shot_size_file.write(str(shot_size))

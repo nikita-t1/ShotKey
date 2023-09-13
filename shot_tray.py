@@ -13,3 +13,10 @@ class ShotTray:
         self.tray_8 = tray_8
 
         self.trays = [tray_1, tray_2, tray_3, tray_4, tray_5, tray_6, tray_7, tray_8]
+
+    def get_amount_of_glasses(self) -> int:
+        amount = 0
+        for tray in self.trays:
+            if tray.value():
+                amount += 1
+        return amount
