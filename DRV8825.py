@@ -11,10 +11,10 @@ class StopMotorInterrupt(Exception):
 class A4988Nema(object):
     """ Class to control a Nema bi-polar stepper motor with a A4988 also tested with DRV8825"""
 
-    def __init__(self, direction_pin, step_pin, enablePinPin, end_switch_pin):
+    def __init__(self, direction_pin, step_pin, enable_pin, end_switch_pin):
         self.dirPin = direction_pin
         self.stepPin = step_pin
-        self.enablePin = enablePinPin
+        self.enablePin = enable_pin
         self.end_switch_pin = end_switch_pin
 
         self.current_position = 0
@@ -40,7 +40,7 @@ class A4988Nema(object):
     def move_to_position(self, position):
         """ Moves the motor to the specified position """
         if position > 7 or position < 0:
-            raise ValueError("Position must be between 0 and 7")
+            return
         if position == self.current_position:
             return
 
@@ -98,7 +98,7 @@ class A4988Nema(object):
         except StopMotorInterrupt:
             print("Stop Motor Interrupt : RpiMotorLib: ")
         except Exception as motor_error:
-            print(sys.exc_info()[0])
+            # print(sys.exc_info()[0])
             print(motor_error)
             print("RpiMotorLib  : Unexpected error:")
         else:

@@ -23,13 +23,13 @@ def init_color_wheel() -> ColorWheel:
     color_wheel = ColorWheel(bluePin, greenPin, redPin)
 
     color_wheel.showRed()
-    utime.sleep(2)
+    utime.sleep(1.5)
     color_wheel.showYellow()
-    utime.sleep(2)
+    utime.sleep(1.5)
     color_wheel.showGreen()
-    utime.sleep(2)
+    utime.sleep(1.5)
     color_wheel.showBlue()
-    utime.sleep(2)
+    utime.sleep(1.5)
 
     return color_wheel
 
@@ -39,7 +39,7 @@ def init_rotary_encoder() -> RotaryEncoder:
     encoderBPin = Pin(14, Pin.IN, Pin.PULL_UP)
 
     rotary_encoder = RotaryEncoder(encoderAPin, encoderBPin)
-    utime.sleep(3)
+    utime.sleep(2)
     return rotary_encoder
 
 
@@ -51,7 +51,7 @@ def init_stepper_motor() -> DRV8825.A4988Nema:
     endSwitchPin = Pin(28, Pin.IN, Pin.PULL_DOWN)  # Endschalter
 
     stepper: DRV8825.A4988Nema = DRV8825.A4988Nema(dirPin, stepPin, enablePinPin, endSwitchPin)
-    utime.sleep(3)
+    utime.sleep(2)
     return stepper
 
 
@@ -71,11 +71,12 @@ def init_shot_tray() -> ShotTray:
     btn8 = Pin(17, Pin.IN, Pin.PULL_DOWN)
 
     shot_tray = ShotTray(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
-    utime.sleep(3)
+    utime.sleep(2)
     return shot_tray
 
 
 def init_water_pump() -> WaterPump:
     pump_pin = Pin(10, Pin.OUT, value=0)
     whiskey_pump = WaterPump(pump_pin)
+    utime.sleep(2)
     return whiskey_pump

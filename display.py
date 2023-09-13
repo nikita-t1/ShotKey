@@ -3,13 +3,12 @@ class Display:
     def __init__(self, i2c):
         self.i2c = i2c
         self.oled = SH1106_I2C(128, 64, i2c=i2c)                  # Init oled display
-        print("Initialize SH1106_I2C")
         self.oled.sleep(False)
         self.oled.rotate(True)
         self.oled.fill(0)
-        
+
     def write_text_to_display(self, horizontal_pos=None, *args):
-        self.oled.fill(0)   
+        self.oled.fill(0)
         amount_of_arguments = len(args)
         diff = 64 // amount_of_arguments
         index = 0
@@ -22,7 +21,7 @@ class Display:
             self.oled.text(arg, horizontal, index)
             index += diff
         self.oled.show()
-        
+
 #
 # MicroPython SH1106 OLED driver, I2C and SPI interfaces
 #

@@ -1,4 +1,5 @@
 import utime
+from machine import Pin
 
 import DRV8825
 from color_wheel import ColorWheel
@@ -44,7 +45,7 @@ utime.sleep(3)
 ui_screen: UiScreen = UiScreen(oled, shot_tray, pump, stepper, color_wheel)
 
 # Initialize the start button (on the rotary encoder)
-buttonStart = init_start_button()
+buttonStart: Pin = init_start_button()
 color_wheel.showGreen()
 
 
@@ -70,7 +71,7 @@ def fill_shots():
 
 while True:
     ui_screen.show()
-    enc = rotary_encoder.readRotaryEncoder()
+    enc: int = rotary_encoder.readRotaryEncoder()
     if enc == rotary_encoder.ROTARY_CW:
         print("    ~~> rotary increase [clockwise]")
 
