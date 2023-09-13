@@ -3,7 +3,7 @@ from machine import Pin
 
 import DRV8825
 from initHardware import init_color_wheel, init_rotary_encoder, init_stepper_motor, init_display, init_shot_tray, \
-    init_start_button
+    init_start_button, init_water_pump
 from color_wheel import ColorWheel
 from rotary_encoder import RotaryEncoder
 from shot_tray import ShotTray
@@ -39,6 +39,12 @@ stepper: DRV8825.A4988Nema = init_stepper_motor()
 oled.write_text_to_display(None, "", "Fahre zu ", "Nullposition", "")
 stepper.move_to_end_switch()
 oled.write_text_to_display(None, "", "Nullposition", "erreicht", "")
+utime.sleep(3)
+###
+
+###
+oled.write_text_to_display(None, "", "Initialisiere", "Pumpe", "")
+pump = init_water_pump()
 utime.sleep(3)
 ###
 

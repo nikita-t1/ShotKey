@@ -6,6 +6,7 @@ from color_wheel import ColorWheel
 from display import Display
 from rotary_encoder import RotaryEncoder
 from shot_tray import ShotTray
+from water_pump import WaterPump
 
 
 def init_display() -> Display:
@@ -72,3 +73,9 @@ def init_shot_tray() -> ShotTray:
     shot_tray = ShotTray(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
     utime.sleep(3)
     return shot_tray
+
+
+def init_water_pump() -> WaterPump:
+    pump_pin = Pin(10, Pin.OUT, value=0)
+    whiskey_pump = WaterPump(pump_pin)
+    return whiskey_pump
