@@ -9,9 +9,14 @@ class WaterPump:
     def __init__(self, signal_pin: Pin):
         self.signal_pin = signal_pin
 
-        shot_size_file = open("shotSize.txt", "r")
-        self.default_shot_size = int(shot_size_file.read())
-        shot_size_file.close()
+        try:
+            shot_size_file = open("shotSize.txt", "r")
+            self.default_shot_size = int(shot_size_file.read())
+            shot_size_file.close()
+        except OSError:
+            shot_size_file = open("shotSize.txt", "w")
+            shot_size_file.write(str(self.default_shot_size))
+            shot_size_file.close()
 
     def on(self):
         self.signal_pin.value(1)
