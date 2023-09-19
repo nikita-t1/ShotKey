@@ -3,7 +3,7 @@ import utime
 
 
 class WaterPump:
-    ml_per_second: float = 4.0
+    ml_per_second: float = 8.51063829787234
     default_shot_size: int = 40  # ml
 
     def __init__(self, signal_pin: Pin):
