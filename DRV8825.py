@@ -28,6 +28,10 @@ class A4988Nema(object):
                            '1/16': (0, 0, 1),
                            '1/32': (1, 0, 1)}
 
+    def is_at_end_switch(self):
+        """ Returns True if the end switch is triggered """
+        return self.end_switch_pin.value() == 1 and self.current_position == 0
+
     def move_to_end_switch(self):
         """ Moves the motor until the end switch is triggered """
         self.enablePin.value(0)
