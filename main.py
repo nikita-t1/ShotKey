@@ -39,7 +39,6 @@ utime.sleep(3)
 # Initialize the water pump
 oled.write_text_to_display(None, "", "Initialisiere", "Pumpe", "")
 pump = init_water_pump()
-utime.sleep(3)
 
 # Initialize the UI screens
 ui_screen: UiScreen = UiScreen(oled, shot_tray, pump, stepper, color_wheel)
@@ -47,6 +46,8 @@ ui_screen: UiScreen = UiScreen(oled, shot_tray, pump, stepper, color_wheel)
 # Initialize the start button (on the rotary encoder)
 buttonStart: Pin = init_start_button()
 color_wheel.showGreen()
+oled.write_text_to_display(None, "", "Initialisierung", "abgeschlossen", "")
+utime.sleep(3)
 
 
 def fill_shots():
@@ -61,7 +62,7 @@ def fill_shots():
                 oled.write_text_to_display(None, "", "Fuelle Glas", str(i + 1), "")
                 pump.fill_shot()
                 utime.sleep(3)
-            #oled.write_text_to_display(None, "", "Current Position", str(stepper.current_position), "")
+            # oled.write_text_to_display(None, "", "Current Position", str(stepper.current_position), "")
 
     oled.write_text_to_display(None, "", "Fahre zu", "Endposition", "")
     stepper.move_to_end_switch()
@@ -69,15 +70,19 @@ def fill_shots():
     utime.sleep(1)
 
 
+# debounce the button
+current_button_state = False
+
+# Main loop
 while True:
     ui_screen.show()
     enc: int = rotary_encoder.readRotaryEncoder()
     if enc == rotary_encoder.ROTARY_CW:
         print("    ~~> rotary increase [clockwise]")
 
-        if ui_screen.get() == ui_screen.AdjustShotSize:
+        if ui_screen.get() == ui_screen.AdjustShotSize and ui_screen.screen_selected:
             pump.change_shot_size(pump.default_shot_size + 1)
-        elif ui_screen.get() == ui_screen.MoveToPos:
+        elif ui_screen.get() == ui_screen.MoveToPos and ui_screen.screen_selected:
             if stepper.current_position < 7:
                 stepper.move_to_position(stepper.current_position + 1)
         else:
@@ -85,15 +90,16 @@ while True:
     elif enc == rotary_encoder.ROTARY_CCW:
         print("    ~~> rotary decrease [counter clockwise]")
 
-        if ui_screen.get() == ui_screen.AdjustShotSize:
+        if ui_screen.get() == ui_screen.AdjustShotSize and ui_screen.screen_selected:
             pump.change_shot_size(pump.default_shot_size - 1)
-        elif ui_screen.get() == ui_screen.MoveToPos:
+        elif ui_screen.get() == ui_screen.MoveToPos and ui_screen.screen_selected:
             if stepper.current_position > 0:
                 stepper.move_to_position(stepper.current_position - 1)
         else:
             ui_screen.previous().show()
 
-    if buttonStart.value():
+    if buttonStart.value() and not current_button_state:
+        current_button_state = True
         if ui_screen.get() == ui_screen.Main:
             if stepper.current_position != 0:
                 stepper.move_to_end_switch()
@@ -103,3 +109,6 @@ while True:
             ui_screen.selectScreen()
         elif ui_screen.get() == ui_screen.MoveToPos:
             ui_screen.selectScreen()
+
+        utime.sleep(0.3)
+        current_button_state = False

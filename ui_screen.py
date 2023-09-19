@@ -26,8 +26,8 @@ class UiScreen:
         return self.currentScreen
 
     def show(self):
-        if self.currentScreen == 0:
-            if self.stepper.current_position != 0:
+        if self.currentScreen == UiScreen.Main:
+            if not self.stepper.is_at_end_switch():
                 self.color_wheel.showYellow()
                 self.oled.write_text_to_display(None, "Stepper Motor", "nicht in", "Nullposition", "", "Start druecken")
             elif self.tray.get_amount_of_glasses() == 0:
@@ -36,21 +36,21 @@ class UiScreen:
             else:
                 self.color_wheel.showGreen()
                 self.oled.write_text_to_display(None, "Einsatzbereit", "", "Erkannte Glaeser", str(self.tray.get_amount_of_glasses()))
-        elif self.currentScreen == 1:
+        elif self.currentScreen == UiScreen.AdjustShotSize:
             if self.screen_selected:
                 self.color_wheel.showBlue()
                 self.oled.write_text_to_display(None, "Shotgroesse", "bearbeiten", "Aktuelle", str(self.water_pump.default_shot_size))
             else:
                 self.color_wheel.showGreen()
                 self.oled.write_text_to_display(None, "Hier laesst", "sich die", "Shotgroesse", "bearbeiten")
-        elif self.currentScreen == 2:
+        elif self.currentScreen == UiScreen.MoveToPos:
             if self.screen_selected:
                 self.color_wheel.showBlue()
-                self.oled.write_text_to_display(None, "Aktuelle Position", str(self.stepper.current_position), "")
+                self.oled.write_text_to_display(None, "Aktuelle", "Position", str(self.stepper.current_position), "")
             else:
                 self.color_wheel.showGreen()
                 self.oled.write_text_to_display(None, "Fahre den Motor", "zu einer", "bestimmten", "Position")
-        elif self.currentScreen == 3:
+        elif self.currentScreen == UiScreen.Credits:
             self.color_wheel.showGreen()
             self.oled.write_text_to_display(None, "Created by", "Max Schaefer", "Noah Roeschard", "Nikita Tarasov",
                                             "Joshua von Horn")
