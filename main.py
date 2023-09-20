@@ -109,6 +109,9 @@ while True:
             ui_screen.selectScreen()
         elif ui_screen.get() == ui_screen.MoveToPos:
             ui_screen.selectScreen()
+        elif ui_screen.get() == ui_screen.TurnOnPump:
+            color_wheel.showYellow()
+            pump.turn_on_for_duration(10)
 
         utime.sleep(0.3)
         current_button_state = False

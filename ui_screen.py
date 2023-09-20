@@ -9,8 +9,9 @@ class UiScreen:
     Main = 0
     AdjustShotSize = 1
     MoveToPos = 2
-    Credits = 3
-    #TurnOnPump = 4
+    TurnOnPump = 3
+    Credits = 4
+
 
     screen_selected = False
 
@@ -50,6 +51,9 @@ class UiScreen:
             else:
                 self.color_wheel.showGreen()
                 self.oled.write_text_to_display(None, "Fahre den Motor", "zu einer", "bestimmten", "Position")
+        elif self.currentScreen == UiScreen.TurnOnPump:
+            self.color_wheel.showGreen()
+            self.oled.write_text_to_display(None, "Pumpe fuer", "10 Sekunden", "einschalten", "")
         elif self.currentScreen == UiScreen.Credits:
             self.color_wheel.showGreen()
             self.oled.write_text_to_display(None, "Created by", "Max Schaefer", "Noah Roeschard", "Nikita Tarasov",
@@ -62,14 +66,14 @@ class UiScreen:
 
     def next(self):
         screen = self.currentScreen + 1
-        if screen > 3:
-            screen = 0
+        if screen > UiScreen.Credits:
+            screen = UiScreen.Main
         self.currentScreen = screen
         return self
 
     def previous(self):
         screen = self.currentScreen - 1
-        if screen < 0:
-            screen = 3
+        if screen < UiScreen.Main:
+            screen = UiScreen.Credits
         self.currentScreen = screen
         return self
